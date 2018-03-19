@@ -72,7 +72,7 @@ class CoinClient{
   }
 }
 
-CoinClient._serverHost = 'http://cryptoscreener.io';
+CoinClient._serverHost = 'cryptoscreener.io';
 
 CoinClient._ports = {
   'OrderBooks' : 3010,
