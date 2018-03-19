@@ -4,7 +4,17 @@ const jayson = require('jayson/promise');
  * CoinClient.getDimensions().then(dimensions => console.log(dimensions));
  * ->
  * {
- *   columns: [{ id: 'market', fieldType: 'string', name: 'Market', enabled: true, range: 80 || 2 || [2, 3], rangeType: 'StandardDeviation' || 'Percentile' }, { id: 'usdMarketCap', fieldType: 'float', name: 'Market Cap' }, ...],
+ *   columns: [{ id: 'market', fieldType: 'string', name: 'Market', enabled: true, range: 80 || 2 || [2, 3], rangeType: 'StandardDeviation' || 'Percentile', plan: 'Free' }, { id: 'usdMarketCap', fieldType: 'float', name: 'Market Cap' }, ...],
+ *   enabledColumns: ['market', 'usdMarket'],
+ *   data: [ ['market', 'usdMarketCap', ...], ['ETH-TIX', 26755382.458370734, ...] ]
+ * }
+ */
+
+/**
+ * CoinClient.getSmartLists().then(dimensions => console.log(dimensions));
+ * ->
+ * {
+ *   columns: [{ id: 'market', fieldType: 'string', name: 'Market' }, { id: 'usdMarketCap', fieldType: 'float', name: 'Market Cap' }, ...],
  *   data: [ ['market', 'usdMarketCap', ...], ['ETH-TIX', 26755382.458370734, ...] ]
  * }
  */
@@ -62,7 +72,7 @@ class CoinClient{
   }
 }
 
-CoinClient._serverHost = '159.65.227.89';
+CoinClient._serverHost = 'http://cryptoscreener.io';
 
 CoinClient._ports = {
   'OrderBooks' : 3010,
