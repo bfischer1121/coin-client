@@ -2,6 +2,10 @@
 
 const { CoinClient } = require('./CoinClient');
 
+CoinClient.getAllEvents().then(events => {
+  console.log(`${events.length} events`);
+});
+
 CoinClient.getDimensions().then(dimensions => {
   /**
    * console.log(dimensions); ->
