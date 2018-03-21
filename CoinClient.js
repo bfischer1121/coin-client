@@ -20,8 +20,24 @@ const jayson = require('jayson/promise');
  */
 
 class CoinClient{
+  static getMarketLists(){
+    return this._request('Screener#getMarketLists');
+  }
+
   static getDimensions(){
     return this._request('Screener#getDimensions');
+  }
+
+  static getDimensionColumns(){
+    return this._request('Screener#getDimensionColumns');
+  }
+
+  static getCriteriaResults(criteria){
+    return this._request('Screener#getCriteriaResults', criteria);
+  }
+
+  static getAllEvents(){
+    return this._request('Events#getAllEvents');
   }
 
   static _request(route, ...args){
@@ -76,6 +92,7 @@ CoinClient._serverHost = 'cryptoscreener.io';
 
 CoinClient._ports = {
   'OrderBooks' : 3010,
+  'Events'     : 3013,
   'Screener'   : 3011,
   'Proxy'      : 3012
 };
