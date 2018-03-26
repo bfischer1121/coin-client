@@ -88,7 +88,7 @@ class CoinClient{
   }
 }
 
-CoinClient._serverHost = 'cryptoscreener.io';
+CoinClient._serverHost = 'tradingshape.com';
 
 CoinClient._ports = {
   'OrderBooks' : 3010,
