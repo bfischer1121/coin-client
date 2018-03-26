@@ -20,6 +20,10 @@ const jayson = require('jayson/promise');
  */
 
 class CoinClient{
+  static help(){
+    return this._request('help').then(help => console.log(help));
+  }
+
   static _verifyEndpoint(methodName){
     return this._getEndpoints().then(endpoints => {
       return endpoints.findIndex(endpoint => endpoint.name === methodName) > -1;
@@ -79,6 +83,10 @@ class CoinClient{
 exports.CoinClient = new Proxy(CoinClient, {
   get(target, method){
     return (...args) => {
+      if(method === 'help'){
+        return target.help();
+      }
+
       return new Promise((resolve, reject) => {
         target._verifyEndpoint(method).then(isValid => {
           isValid ? target._request(method, ...args).then((...args) => resolve(...args)) : reject(`Invalid API endpoint: ${method}`);
