@@ -40,6 +40,10 @@ class CoinClient{
     return this._request('Events#getAllEvents');
   }
 
+  static getEventCategories(){
+    return this._request('Events#getCategories');
+  }
+
   static getAllICOs(){
     return this._request('ICOs#getAllICOs');
   }
