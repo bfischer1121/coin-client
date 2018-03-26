@@ -4,6 +4,10 @@ const { CoinClient } = require('./CoinClient');
 
 CoinClient.help();
 
+CoinClient.searchCryptocurrencies('bit').then(currencies => {
+  console.log(`${currencies.length} search results`);
+});
+
 CoinClient.getEventCategories().then(categories => {
   console.log(`${categories.length} event categories`);
 });
