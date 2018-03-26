@@ -22,7 +22,7 @@ const jayson = require('jayson/promise');
 class CoinClient{
   static _verifyEndpoint(methodName){
     return this._getEndpoints().then(endpoints => {
-      return endpoints.findIndex(endpoint => endpoint.name === endpointName) > -1;
+      return endpoints.findIndex(endpoint => endpoint.name === methodName) > -1;
     });
   }
 
