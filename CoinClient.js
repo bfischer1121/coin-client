@@ -40,6 +40,10 @@ class CoinClient{
     return this._request('Events#getAllEvents');
   }
 
+  static getAllICOs(){
+    return this._request('ICOs#getAllICOs');
+  }
+
   static _request(route, ...args){
     let [server, method] = route.split('#');
     return this._client(server).request(method, args).then(response => this._getRPCResponse(response));
@@ -93,6 +97,7 @@ CoinClient._serverHost = 'tradingshape.com';
 CoinClient._ports = {
   'OrderBooks' : 3010,
   'Events'     : 3013,
+  'ICOs'       : 3014,
   'Screener'   : 3011,
   'Proxy'      : 3012
 };
