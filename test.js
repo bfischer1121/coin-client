@@ -2,6 +2,10 @@
 
 const { CoinClient } = require('./CoinClient');
 
+CoinClient.getMarketLists().then(categories => {
+  console.log(`${categories.length} event categories`);
+});
+
 CoinClient.getEventCategories().then(categories => {
   console.log(`${categories.length} event categories`);
 });

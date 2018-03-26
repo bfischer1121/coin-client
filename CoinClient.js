@@ -20,52 +20,32 @@ const jayson = require('jayson/promise');
  */
 
 class CoinClient{
-  static getMarketLists(){
-    return this._request('Screener#getMarketLists');
+  static _verifyEndpoint(methodName){
+    return this._getEndpoints().then(endpoints => {
+      return endpoints.findIndex(endpoint => endpoint.name === endpointName) > -1;
+    });
   }
 
-  static getDimensions(){
-    return this._request('Screener#getDimensions');
+  static _getEndpoints(){
+    this._getEndpointsPromise = this._getEndpointsPromise || this._request('getEndpoints');
+    return this._getEndpointsPromise;
   }
 
-  static getDimensionColumns(){
-    return this._request('Screener#getDimensionColumns');
+  static _request(method, ...args){
+    return this._getClient().request(method, args).then(response => this._getRPCResponse(response));
   }
 
-  static getCriteriaResults(criteria){
-    return this._request('Screener#getCriteriaResults', criteria);
-  }
-
-  static getAllEvents(){
-    return this._request('Events#getAllEvents');
-  }
-
-  static getEventCategories(){
-    return this._request('Events#getCategories');
-  }
-
-  static getAllICOs(){
-    return this._request('ICOs#getAllICOs');
-  }
-
-  static _request(route, ...args){
-    let [server, method] = route.split('#');
-    return this._client(server).request(method, args).then(response => this._getRPCResponse(response));
-  }
-
-  static _client(serverName){
-    this._clients = this._clients || {};
-
-    if(!this._clients[serverName]){
-      this._clients[serverName] = jayson.client.http({
-        host     : this._serverHost,
-        port     : this._ports[serverName],
+  static _getClient(){
+    if(!this._client){
+      this._client = jayson.client.http({
+        host     : 'tradingshape.com',
+        port     : 3011,
         replacer : this._replacer,
         reviver  : this._reviver
       });
     }
 
-    return this._clients[serverName];
+    return this._client;
   }
 
   static _replacer(key, value){
@@ -96,14 +76,14 @@ class CoinClient{
   }
 }
 
-CoinClient._serverHost = 'tradingshape.com';
-
-CoinClient._ports = {
-  'OrderBooks' : 3010,
-  'Events'     : 3013,
-  'ICOs'       : 3014,
-  'Screener'   : 3011,
-  'Proxy'      : 3012
-};
-
-exports.CoinClient = CoinClient;
+exports.CoinClient = new Proxy(CoinClient, {
+  get(target, method){
+    return (...args) => {
+      return new Promise((resolve, reject) => {
+        target._verifyEndpoint(method).then(isValid => {
+          isValid ? target._request(method, ...args).then((...args) => resolve(...args)) : reject(`Invalid API endpoint: ${method}`);
+        });
+      });
+    };
+  }
+});
