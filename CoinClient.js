@@ -77,25 +77,28 @@ class CoinClient{
     }
 
     if(Array.isArray(response.result || {}) && Array.isArray(response.result[0] || {})){
-      let fields  = response.result.shift(),
-          rows    = response.result,
-          records = [],
-          record, row, col;
-
-      for(row = 0; row < rows.length; row++){
-        record = {};
-
-        for(col = 0; col < rows[row].length; col++){
-          record[fields[col]] = rows[row][col];
-        }
-
-        records.push(record);
-      }
-
-      return records;
+      return CoinClient.parseCSV(response.result);
     }
 
     return response.result;
+  }
+
+  static parseCSV(data){
+    let fields  = data.shift(),
+        records = [],
+        record, row, col;
+
+    for(row = 0; row < data.length; row++){
+      record = {};
+
+      for(col = 0; col < data[row].length; col++){
+        record[fields[col]] = data[row][col];
+      }
+
+      records.push(record);
+    }
+
+    return records;
   }
 }
 
