@@ -76,6 +76,25 @@ class CoinClient{
       throw response.error;
     }
 
+    if(Array.isArray(response.result || {}) && Array.isArray(response.result[0] || {})){
+      let fields  = response.result.shift(),
+          rows    = response.result,
+          records = [],
+          record, row, col;
+
+      for(row = 0; row < rows.length; row++){
+        record = {};
+
+        for(col = 0; j < rows[row].length; col++){
+          record[fields[col]] = rows[row][col];
+        }
+
+        records.push(record);
+      }
+
+      return records;
+    }
+
     return response.result;
   }
 }
