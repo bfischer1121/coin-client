@@ -85,7 +85,7 @@ class CoinClient{
       for(row = 0; row < rows.length; row++){
         record = {};
 
-        for(col = 0; j < rows[row].length; col++){
+        for(col = 0; col < rows[row].length; col++){
           record[fields[col]] = rows[row][col];
         }
 
