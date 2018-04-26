@@ -106,7 +106,7 @@ exports.CoinClient = new Proxy(CoinClient, {
   get(target, method){
     return (...args) => {
       if(['help', 'parseCSV'].indexOf(method) > -1){
-        return target[method]();
+        return target[method](...args);
       }
 
       return new Promise((resolve, reject) => {
