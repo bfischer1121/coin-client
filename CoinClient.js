@@ -24,6 +24,24 @@ class CoinClient{
     return this._request('help').then(help => console.log(help));
   }
 
+  static parseCSV(data){
+    let fields  = data.shift(),
+        records = [],
+        record, row, col;
+
+    for(row = 0; row < data.length; row++){
+      record = {};
+
+      for(col = 0; col < data[row].length; col++){
+        record[fields[col]] = data[row][col];
+      }
+
+      records.push(record);
+    }
+
+    return records;
+  }
+
   static _verifyEndpoint(methodName){
     return this._getEndpoints().then(endpoints => {
       return endpoints.findIndex(endpoint => endpoint.name === methodName) > -1;
@@ -82,31 +100,13 @@ class CoinClient{
 
     return response.result;
   }
-
-  static parseCSV(data){
-    let fields  = data.shift(),
-        records = [],
-        record, row, col;
-
-    for(row = 0; row < data.length; row++){
-      record = {};
-
-      for(col = 0; col < data[row].length; col++){
-        record[fields[col]] = data[row][col];
-      }
-
-      records.push(record);
-    }
-
-    return records;
-  }
 }
 
 exports.CoinClient = new Proxy(CoinClient, {
   get(target, method){
     return (...args) => {
-      if(method === 'help'){
-        return target.help();
+      if(['help', 'parseCSV'].indexOf(method) > -1){
+        return target[method]();
       }
 
       return new Promise((resolve, reject) => {
