@@ -1,5 +1,6 @@
 const io = require('socket.io-client');
 const jayson = require('jayson/promise');
+const _ = require('lodash');
 
 /**
  * CoinClient.getDimensions().then(dimensions => console.log(dimensions));

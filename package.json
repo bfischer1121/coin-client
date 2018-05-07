@@ -12,6 +12,7 @@
   "devDependencies": {},
   "dependencies": {
     "jayson": "^2.0.4",
+    "lodash": "^4.17.10",
     "socket.io": "^2.1.0"
   }
 }
