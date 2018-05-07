@@ -3,6 +3,10 @@
 const { CoinClient } = require('./CoinClient');
 
 CoinClient.help();
+CoinClient.onIndicatorsChanged(indicators => {
+  console.log(indicators);
+});
+return;
 
 CoinClient.searchCryptocurrencies('bit').then(currencies => {
   console.log(`${currencies.length} search results`);

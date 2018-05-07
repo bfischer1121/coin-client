@@ -1,3 +1,4 @@
+const io = require('socket.io-client');
 const jayson = require('jayson/promise');
 
 /**
@@ -40,6 +41,11 @@ class CoinClient{
     }
 
     return records;
+  }
+
+  static on(eventName, callback){
+    this._socket = this._socket || io('http://tradingshape.com:3013');
+    this._socket.on(eventName, callback);
   }
 
   static _verifyEndpoint(methodName){
@@ -107,6 +113,10 @@ exports.CoinClient = new Proxy(CoinClient, {
     return (...args) => {
       if(['help', 'parseCSV'].indexOf(method) > -1){
         return target[method](...args);
+      }
+
+      if(method.indexOf('on') === 0){
+        return target.on(method.slice(2).toLowerCase()[0] + method.slice(3), ...args);
       }
 
       return new Promise((resolve, reject) => {
