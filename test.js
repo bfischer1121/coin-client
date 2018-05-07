@@ -2,7 +2,18 @@
 
 const { CoinClient } = require('./CoinClient');
 
-CoinClient.help();
+//CoinClient.help();
+
+CoinClient.getFrontendClient().then(code => {
+  console.log('code', code);
+});
+
+return;
+CoinClient.onPriceChanged((symbolId, price) => {
+  console.log('price', symbolId, price);
+});
+
+return;
 CoinClient.onIndicatorsChanged(indicators => {
   console.log(indicators);
 });
