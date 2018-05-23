@@ -1,14 +1,61 @@
 'use strict';
 
-const { CoinClient } = require('./CoinClient');
+const { CoinClient, TwitterClient } = require('./CoinClient');
+const _ = require('lodash');
 
-//CoinClient.help();
+(async () => {
+  let formatResults = (results) => {
+    if(_.isArray(results)){
+      return '[' + (results.length ? JSON.stringify(results[0]) : '') + (results.length > 1 ? `, ...${results.length - 1} more]` : ']');
+    }
 
-CoinClient.getFrontendClient().then(code => {
-  console.log('code', code);
-});
+    if(_.isString(results)){
+      return results.slice(0, 100) + '...';
+    }
 
+    if(_.isPlainObject(results)){
+      return JSON.stringify(results);
+    }
+
+    return '';
+  };
+
+  let call = async (endpoint, ...args) => {
+    console.log(`\n${endpoint}(` + (args.length ? args.map(a => JSON.stringify(a)).join(', ') : '') + ') -> ');
+
+    let client  = { 'CoinClient': CoinClient, 'TwitterClient': TwitterClient }[endpoint.split('.')[0]],
+        results = await client[endpoint.split('.')[1]](...args);
+
+    if(results){
+      console.log(formatResults(results));
+    }
+  };
+
+  /*
+  await call('CoinClient.help');
+  await call('CoinClient.getDataVersions');
+  await call('CoinClient.getFrontendClient');
+  await call('CoinClient.getExchanges');
+  await call('CoinClient.getCurrencies');
+  await call('CoinClient.getMarketLists');
+  await call('CoinClient.getIndicatorInfo');
+  await call('CoinClient.getIndicators', { symbol: 'BINANCE_SPOT_BTC_USDT' });
+  await call('CoinClient.getAllEvents');
+  await call('CoinClient.getEventCategories');
+  await call('CoinClient.getAllICOs');
+  await call('CoinClient.getTwitterUsers');
+  */
+
+  /*
+  await call('TwitterClient.help');
+  await call('TwitterClient.getTweets', { assets: ['BTC'], skip: 0, limit: 10 });
+  */
+
+  TwitterClient.onTweet(tweet => console.log(tweet));
+  //TwitterClient.onTweetForBTC(tweet => console.log(tweet));
+})();
 return;
+
 CoinClient.onPriceChanged((symbolId, price) => {
   console.log('price', symbolId, price);
 });
@@ -18,18 +65,6 @@ CoinClient.onIndicatorsChanged(indicators => {
   console.log(indicators);
 });
 return;
-
-CoinClient.searchCryptocurrencies('bit').then(currencies => {
-  console.log(`${currencies.length} search results`);
-});
-
-CoinClient.getEventCategories().then(categories => {
-  console.log(`${categories.length} event categories`);
-});
-
-CoinClient.getAllEvents().then(events => {
-  console.log(`${events.length} events`);
-});
 
 CoinClient.getDimensions().then(dimensions => {
   /**
