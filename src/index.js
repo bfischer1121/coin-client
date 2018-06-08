@@ -2,26 +2,7 @@ const io = require('socket.io-client');
 const jayson = require('jayson/promise');
 const _ = require('lodash');
 
-/**
- * CoinClient.getDimensions().then(dimensions => console.log(dimensions));
- * ->
- * {
- *   columns: [{ id: 'market', fieldType: 'string', name: 'Market', enabled: true, range: 80 || 2 || [2, 3], rangeType: 'StandardDeviation' || 'Percentile', plan: 'Free' }, { id: 'usdMarketCap', fieldType: 'float', name: 'Market Cap' }, ...],
- *   enabledColumns: ['market', 'usdMarket'],
- *   data: [ ['market', 'usdMarketCap', ...], ['ETH-TIX', 26755382.458370734, ...] ]
- * }
- */
-
-/**
- * CoinClient.getSmartLists().then(dimensions => console.log(dimensions));
- * ->
- * {
- *   columns: [{ id: 'market', fieldType: 'string', name: 'Market' }, { id: 'usdMarketCap', fieldType: 'float', name: 'Market Cap' }, ...],
- *   data: [ ['market', 'usdMarketCap', ...], ['ETH-TIX', 26755382.458370734, ...] ]
- * }
- */
-
-class CoinClient{
+class Client{
   constructor(host, rpcPort, socketPort){
     this.host       = host;
     this.rpcPort    = rpcPort;
@@ -29,7 +10,7 @@ class CoinClient{
   }
 
   static getClient(host, rpcPort, socketPort){
-    let client = new CoinClient(host, rpcPort, socketPort);
+    let client = new Client(host, rpcPort, socketPort);
 
     return new Proxy(client, {
       get(target, method){
@@ -142,6 +123,6 @@ class CoinClient{
 }
 
 module.exports = {
-  CoinClient    : CoinClient.getClient('tradingshape.com', 3011, 3013),
-  TwitterClient : CoinClient.getClient('206.189.186.85', 3011, 3013)
+  CoinClient    : Client.getClient('tradingshape.com', 3011, 3013),
+  TwitterClient : Client.getClient('206.189.186.85', 3011, 3013)
 };
