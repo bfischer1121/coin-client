@@ -1,6 +1,6 @@
 'use strict';
 
-const { CoinClient, TwitterClient } = require('./CoinClient');
+const { CoinClient, TwitterClient } = require('./src/index');
 const _ = require('lodash');
 
 (async () => {
@@ -30,6 +30,12 @@ const _ = require('lodash');
       console.log(formatResults(results));
     }
   };
+
+  await call('CoinClient.parseSymbolId', 'BINANCE_SPOT_BTC_USDT');
+  await call('CoinClient.getPriceIndicators', 'BINANCE_SPOT_BTC_USDT');
+  await call('CoinClient.getCurrency', 'GVT');
+  await call('CoinClient.getSymbolPrice', 'BINANCE_SPOT_GVT_BTC');
+  await call('CoinClient.getExchangeRate', 'GVT', 'USDT', 'BINANCE_SPOT_GVT_BTC');
 
   /*
   await call('CoinClient.help');
