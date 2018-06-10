@@ -1,5 +1,7 @@
+const isServerSide = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
 const io = require('socket.io-client');
-const jayson = require('jayson/promise');
+const jayson = require((process.env.APP_ENV === 'browser' || !isServerSide) ? 'jayson/lib/client/browser' : 'jayson/promise');
+const fetch = require('cross-fetch');
 const _ = require('lodash');
 
 class Client{
@@ -84,15 +86,46 @@ class Client{
 
   _getClient(){
     if(!this._client){
-      this._client = jayson.client.http({
-        host     : this.host,
-        port     : this.rpcPort,
-        replacer : this._replacer,
-        reviver  : this._reviver
-      });
+      this._client = isServerSide ? this._getServerSideClient() : this._getBrowserSideClient();
     }
 
     return this._client;
+  }
+
+  _getServerSideClient(){
+    return jayson.client.http({
+      host     : this.host,
+      port     : this.rpcPort,
+      replacer : this._replacer,
+      reviver  : this._reviver
+    });
+  }
+
+  _getBrowserSideClient(){
+    let callServer = async (request, callback) => {
+      let response;
+
+      let options = {
+        method  : 'POST',
+        body    : request,
+        headers : { 'Content-Type': 'application/json' }
+      };
+
+      try{
+        response = (await fetch(`http://${this.host}:${this.rpcPort}`, options)).text();
+      }
+      catch(e){
+        callback(e);
+        return;
+      }
+
+      callback(null, response);
+    };
+
+    return jayson(callServer, {
+      replacer : this._replacer,
+      reviver  : this._reviver
+    });
   }
 
   _replacer(key, value){
