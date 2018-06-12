@@ -1,6 +1,3 @@
-'use strict';
-
+const tests = require('./tests');
 const { CoinClient, TwitterClient } = require('../src/index');
-const _ = require('lodash');
-
-require('./browser');
+tests({ CoinClient, TwitterClient });

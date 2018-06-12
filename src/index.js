@@ -1,4 +1,4 @@
-require('@babel/polyfill');
+import '@babel/polyfill';
 
 const { CoinClient } = require('./CoinClient.js');
 const { TwitterClient } = require('./TwitterClient.js');

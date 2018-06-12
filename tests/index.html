@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta charset="UTF-8">
-    <title>CoinClient Test</title>
+
+    <title>Tests</title>
+
+    <script src="/charting_library/charting_library.min.js"></script>
+    <script src="../dist/main.js"></script>
+    <script src="tests.js"></script>
+    <script>tests({ CoinClient, TwitterClient, TVInterface });</script>
   </head>
   <body>
-    <script src="../dist/main.js"></script>
-    <script src="browser.js"></script>
+    <div id="tv-chart" style="width: 500px; height: 500px; background: #e0e0e0;"></div>
   </body>
 </html>

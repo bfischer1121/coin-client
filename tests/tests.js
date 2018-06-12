@@ -5,7 +5,7 @@ const { CoinClient, TwitterClient } = require('../src/index');
 const _ = require('lodash');
 */
 
-(async () => {
+let tests = (async ({ CoinClient, TwitterClient, TVInterface }) => {
   let formatResults = (results) => {
     if(_.isArray(results)){
       return '[' + (results.length ? JSON.stringify(results[0]) : '') + (results.length > 1 ? `, ...${results.length - 1} more]` : ']');
@@ -58,7 +58,10 @@ const _ = require('lodash');
   await call('TwitterClient.help');
   await call('TwitterClient.getTweets', { assets: ['BTC'], skip: 0, limit: 10 });
   */
-  
+
+  if(TVInterface){
+    TVInterface.addWidget('tv-chart', 'BINANCE_SPOT_BTC_USDT');
+  }
 
   //TwitterClient.onTweet(tweet => console.log(tweet));
   //TwitterClient.onTweetForBTC(tweet => console.log(tweet));
@@ -187,4 +190,8 @@ const _ = require('lodash');
     getListResults();
     setInterval(getListResults, 60 * 1000);
   });
-})();
+});
+
+if(window){
+  window.tests = tests;
+}
