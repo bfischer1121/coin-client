@@ -9,6 +9,8 @@ class Client{
     this.host       = host;
     this.rpcPort    = rpcPort;
     this.socketPort = socketPort;
+
+    this.isServerSide = typeof window === 'undefined';
   }
 
   static getClient(cls, host, rpcPort, socketPort){
@@ -81,12 +83,12 @@ class Client{
   }
 
   async _request(method, ...args){
-    return this._getRPCResponse(await this._getClient().request(method, args));
+    return this._getRPCResponse(await this._getRequestClient().request(method, args));
   }
 
-  _getClient(){
+  _getRequestClient(){
     if(!this._client){
-      this._client = isServerSide ? this._getServerSideClient() : this._getBrowserSideClient();
+      this._client = this.isServerSide ? this._getServerSideClient() : this._getBrowserSideClient();
     }
 
     return this._client;
@@ -112,20 +114,30 @@ class Client{
       };
 
       try{
-        response = (await fetch(`http://${this.host}:${this.rpcPort}`, options)).text();
+        response = await fetch(`http://${this.host}:${this.rpcPort}`, options);
       }
       catch(e){
         callback(e);
         return;
       }
 
-      callback(null, response);
+      callback(null, await response.text());
     };
 
-    return jayson(callServer, {
+    let client = jayson(callServer, {
       replacer : this._replacer,
       reviver  : this._reviver
     });
+
+    return {
+      request: (method, args) => {
+        return new Promise((resolve, reject) => {
+          client.request(method, args, (localError, remoteError, result) => {
+            resolve({ error: localError || remoteError, result });
+          });
+        });
+      }
+    };
   }
 
   _replacer(key, value){
