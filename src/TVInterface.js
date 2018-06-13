@@ -1,6 +1,9 @@
 class TVInterface{
   constructor(coinClient){
     this._coinClient = coinClient;
+
+    this.latestBars = {};
+    this.resolutionToDuration = { 'D': 1440 };
   }
 
   addWidget(containerId, symbol, options = {}){
@@ -51,23 +54,41 @@ class TVInterface{
   }
 
   async getBars(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest){
-    let bars = (await this._coinClient.getTicks({
-      symbol     : symbolInfo.ticker,
-      duration   : { 'D': 1440 }[resolution],
-      startingAt : new Date(from),
-      endingAt   : firstDataRequest ? null : new Date(to + 1)
-    })).map(t => this._transformTick(t));
+    let symbol     = symbolInfo.ticker,
+        duration   = this.resolutionToDuration[resolution],
+        startingAt = new Date(from),
+        endingAt   = firstDataRequest ? null : new Date(to + 1);
+
+    let bars = (await this._coinClient.getTicks({ symbol, duration, startingAt, endingAt })).map(t => this._transformTick(t)),
+        meta = bars.length ? { noData: false } : { noData: true, nextTime: '' };
 
     // bars must be sorted by time or TradingView will not show them
     bars.sort((b1, b2) => b1.time - b2.time);
 
-    let meta = bars.length ? { noData: false } : { noData: true, nextTime: '' };
+    let latestBar  = bars[bars.length - 1],
+        latestTime = ((this.latestBars[symbol] || {})[duration] || {}).time;
+
+    if(latestBar && (!latestTime || latestBar.time >= latestTime)){
+      this.latestBars[symbol] = this.latestBars[symbol] || {};
+      this.latestBars[symbol][duration] = latestBar;
+    }
 
     onHistoryCallback(bars, meta);
   }
 
   subscribeBars(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback){
-    this._coinClient.onNewTick(tick => onRealtimeCallback(this._transformTick(tick)));
+    let duration = this.resolutionToDuration[resolution],
+        tick;
+
+    this._coinClient.onPriceChanged((symbol, price) => {
+      if(symbol === symbolInfo.ticker){
+        tick = this._generateTick(symbol, duration, price);
+
+        if(tick){
+          onRealtimeCallback(tick);
+        }
+      }
+    });
   }
 
   unsubscribeBars(subscriberUID){
@@ -92,6 +113,47 @@ class TVInterface{
     return this._exchanges;
   }
 
+  _generateTick(symbol, duration, price){
+    let latestTime = ((this.latestBars[symbol] || {})[duration] || {}).time,
+        tradeTime  = +this._getAbsoluteAggregateTime(new Date(), duration),
+        tick;
+
+    if(!latestTime || tradeTime > latestTime){
+      this.latestBars[symbol] = this.latestBars[symbol] || {};
+
+      tick = this.latestBars[symbol][duration] = {
+        time   : tradeTime,
+        open   : price,
+        high   : price,
+        low    : price,
+        close  : price,
+        volume : 1
+      };
+    }
+    else if(tradeTime === latestTime){
+      tick         = this.latestBars[symbol][duration];
+      tick.high    = Math.max(tick.high, price);
+      tick.low     = Math.min(tick.low, price);
+      tick.close   = price;
+      tick.volume += 1;
+    }
+
+    return tick;
+  }
+
+  _getAbsoluteAggregateTime(time, tickDuration){
+    let hours   = time.getUTCHours(),
+        minutes = time.getUTCMinutes();
+
+    if(tickDuration > 60){
+      hours = hours - (hours % (tickDuration / 60));
+    }
+
+    minutes = (tickDuration < 60) ? minutes - (minutes % tickDuration) : 0;
+
+    return new Date(Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(), hours, minutes, 0));
+  }
+
   _transformExchange(e){
     return {
       value : e.remoteId,
@@ -104,10 +166,10 @@ class TVInterface{
     let info = this._coinClient.parseSymbolId(s);
 
     let priceScale = {
-      'BTC'  : 100000000,
-      'ETH'  : 1000000000000000000,
-      'USD'  : 10000,
-      'USDT' : 10000
+      'BTC'  : 10000000,
+      'ETH'  : 1000000,
+      'USD'  : 100,
+      'USDT' : 100
     }[info.quoteAssetId] || 10000;
 
     return {
@@ -118,7 +180,7 @@ class TVInterface{
       session               : '24x7',
       exchange              : info.exchangeId,
       listed_exchange       : info.exchangeId,
-      timezone              : 'Europe/London',
+      timezone              : 'UTC',
       fractional            : false,
       minmov                : 1,
       pricescale            : priceScale,
