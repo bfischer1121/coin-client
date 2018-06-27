@@ -1,4 +1,5 @@
 const { Client } = require('./Client.js');
+const _ = require('lodash');
 
 class CoinClient extends Client{
   parseSymbolId(symbolId){
@@ -109,42 +110,41 @@ class CoinClient extends Client{
   }
 
   async _getPricesBySymbol(){
-    if(this._indicatorsLoaded){
-      return this._pricesBySymbol;
+    if(!this._pricesBySymbol){
+      this._pricesBySymbol = (async () => {
+        let prices     = {},
+            indicators = this.parseCSV((await this.api.getIndicators()).general);
+
+        for(let i = 0; i < indicators.length; i++){
+          prices[indicators[i].symbol] = indicators[i]['price:base'];
+        }
+
+        let updatePrice = (symbolId, price) => prices[symbolId] = price;
+
+        this.api.onPriceChanged(updatePrice);
+
+        setTimeout(() => {
+          this.api.unPriceChanged(updatePrice);
+          this._pricesBySymbol = null;
+        }, 60 * 60 * 1000);
+
+        return prices;
+      })();
     }
-
-    this._indicators = this.parseCSV((await this.api.getIndicators()).general);
-    this._pricesBySymbol = this._pricesBySymbol || {};
-
-    for(let i = 0; i < this._indicators.length; i++){
-      this._pricesBySymbol[this._indicators[i].symbol] = this._indicators[i]['price:base'];
-    }
-
-    if(!this._listeningForPriceChanges){
-      this.api.onPriceChanged((symbolId, price) => this._pricesBySymbol[symbolId] = price);
-      this._listeningForPriceChanges = true;
-    }
-
-    this._indicatorsLoaded = true;
-    setTimeout(() => this._indicatorsLoaded = false, 60 * 60 * 1000);
 
     return this._pricesBySymbol;
   }
 
   async _getCurrenciesBySymbol(){
-    if(this._currenciesLoaded){
-      return this._currenciesBySymbol;
+    if(!this._currenciesBySymbol){
+      this._currenciesBySymbol = (async () => {
+        let currencies = _.keyBy(await this.api.getCurrencies(), 'symbol');
+
+        setTimeout(() => this._currenciesBySymbol = null, 60 * 60 * 1000);
+
+        return currencies;
+      })();
     }
-
-    this._currencies = await this.api.getCurrencies();
-    this._currenciesBySymbol = this._currenciesBySymbol || {};
-
-    for(let i = 0; i < this._currencies.length; i++){
-      this._currenciesBySymbol[this._currencies[i].symbol] = this._currencies[i];
-    }
-
-    this._currenciesLoaded = true;
-    setTimeout(() => this._currenciesLoaded = false, 60 * 60 * 1000);
 
     return this._currenciesBySymbol;
   }

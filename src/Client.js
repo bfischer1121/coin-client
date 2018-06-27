@@ -28,6 +28,10 @@ class Client{
             return target.on(method.slice(2).toLowerCase()[0] + method.slice(3), ...args);
           }
 
+          if(method.indexOf('un') === 0){
+            return target.off(method.slice(2).toLowerCase()[0] + method.slice(3), ...args);
+          }
+
           return (async () => {
             let isValid = await target._verifyEndpoint(method);
 
@@ -71,6 +75,12 @@ class Client{
   on(eventName, callback){
     this._socket = this._socket || io(`http://${this.host}:${this.socketPort}`);
     this._socket.on(eventName, callback);
+  }
+
+  un(eventName, callback){
+    if(this._socket){
+      this._socket.off(eventName, callback);
+    }
   }
 
   async _verifyEndpoint(methodName){
