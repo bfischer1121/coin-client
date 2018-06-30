@@ -1,10 +1,11 @@
-const isServerSide = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
-const io = require('socket.io-client');
-const jayson = require((process.env.APP_ENV === 'browser' || !isServerSide) ? 'jayson/lib/client/browser' : 'jayson/promise');
-const fetch = require('cross-fetch');
-const _ = require('lodash');
+import io from 'socket.io-client';
+import fetch from 'cross-fetch';
+import _ from 'lodash';
 
-class Client{
+const isServerSide = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
+const jayson = require((process.env.APP_ENV === 'browser' || !isServerSide) ? 'jayson/lib/client/browser' : 'jayson/promise');
+
+export default class Client{
   constructor(host, rpcPort, socketPort){
     this.host       = host;
     this.rpcPort    = rpcPort;
@@ -29,7 +30,7 @@ class Client{
           }
 
           if(method.indexOf('un') === 0){
-            return target.off(method.slice(2).toLowerCase()[0] + method.slice(3), ...args);
+            return target.un(method.slice(2).toLowerCase()[0] + method.slice(3), ...args);
           }
 
           return (async () => {
@@ -181,5 +182,3 @@ class Client{
     return response.result;
   }
 }
-
-exports.Client = Client;

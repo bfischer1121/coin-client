@@ -1,5 +1,5 @@
-const { Client } = require('./Client.js');
-const _ = require('lodash');
+import Client from './Client.js';
+import _ from 'lodash';
 
 class CoinClient extends Client{
   parseSymbolId(symbolId){
@@ -150,4 +150,4 @@ class CoinClient extends Client{
   }
 }
 
-exports.CoinClient = CoinClient.getClient(CoinClient, 'tradingshape.com', 3011, 3013);
+export default CoinClient.getClient(CoinClient, 'tradingshape.com', 3011, 3013);
