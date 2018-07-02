@@ -1,8 +1,8 @@
-import '@babel/polyfill';
+require('@babel/polyfill');
 
-import CoinClient from './CoinClient.js';
-import TwitterClient from './TwitterClient.js';
-import TVInterface from './TVInterface';
+const { CoinClient } = require('./CoinClient.js');
+const { TwitterClient } = require('./TwitterClient.js');
+const { TVInterface } = require('./TVInterface');
 
 module.exports = {
   CoinClient    : CoinClient,

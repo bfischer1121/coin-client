@@ -1,4 +1,4 @@
-export default class TVInterface{
+class TVInterface{
   constructor(coinClient){
     this._coinClient = coinClient;
 
@@ -207,3 +207,5 @@ export default class TVInterface{
     };
   }
 }
+
+exports.TVInterface = TVInterface;
