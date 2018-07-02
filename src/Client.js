@@ -2,7 +2,11 @@ import io from 'socket.io-client';
 import fetch from 'cross-fetch';
 import _ from 'lodash';
 import jaysonClientSide from 'jayson/lib/client/browser';
-import jaysonServerSide from 'jayson/promise';
+
+if(!process.env.BROWSER && typeof window === 'undefined'){
+  // using commonjs because nested/variable es6 imports appear to be unsupported
+  const jaysonServerSide = require('jayson/promise');
+}
 
 export default class Client{
   constructor(host, rpcPort, socketPort){

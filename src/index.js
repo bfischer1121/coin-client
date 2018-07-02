@@ -2,10 +2,12 @@ import '@babel/polyfill';
 
 import CoinClient from './CoinClient.js';
 import TwitterClient from './TwitterClient.js';
-import TVInterface from './TVInterface';
+import _TVInterface from './TVInterface';
 
-module.exports = {
-  CoinClient    : CoinClient,
-  TwitterClient : TwitterClient,
-  TVInterface   : new TVInterface(CoinClient)
+const TVInterface = new _TVInterface(CoinClient);
+
+export default {
+  CoinClient,
+  TwitterClient,
+  TVInterface
 };
