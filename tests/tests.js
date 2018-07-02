@@ -39,8 +39,7 @@ let tests = (async ({ CoinClient, TwitterClient, TVInterface }) => {
   await call('CoinClient.getCurrency', 'GVT');
   await call('CoinClient.getSymbolPrice', 'BINANCE_SPOT_GVT_BTC');
   await call('CoinClient.getExchangeRate', 'GVT', 'USDT', 'BINANCE_SPOT_GVT_BTC');
-*/
-  /*
+
   await call('CoinClient.help');
   await call('CoinClient.getDataVersions');
   await call('CoinClient.getFrontendClient');
@@ -193,6 +192,6 @@ let tests = (async ({ CoinClient, TwitterClient, TVInterface }) => {
   });
 });
 
-if(typeof window !== 'undefined'){
+if(window){
   window.tests = tests;
 }
