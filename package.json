@@ -3,18 +3,13 @@
   "version": "0.1.0",
   "description": "",
   "private": true,
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib"
   },
   "keywords": [],
   "author": "",
-  "browserslist": [
-    ">1%",
-    "last 4 versions",
-    "not ie < 9"
-  ],
   "peerDependencies": {
     "lodash": "~4.17",
     "@babel/polyfill": "^7.0.0-beta.51"
@@ -26,7 +21,6 @@
     "lodash": "^4.17.10"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-beta.51",
     "cross-fetch": "^2.2.2",
     "jayson": "^2.0.6",
     "socket.io": "^2.1.1"

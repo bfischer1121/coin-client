@@ -1,5 +1,3 @@
-import '@babel/polyfill';
-
 import CoinClient from './CoinClient.js';
 import TwitterClient from './TwitterClient.js';
 import _TVInterface from './TVInterface';
