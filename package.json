@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "private": true,
+  "main": "./dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "webpack-dev-server",
@@ -10,10 +11,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
   "browserslist": [
-    "> 1%",
-    "IE 10"
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 9"
   ],
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",

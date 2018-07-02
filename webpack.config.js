@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 
-module.exports = {
+const config = {
   module: {
     rules: [
       {
@@ -16,6 +16,7 @@ module.exports = {
       }
     ]
   },
+
   output: {
     libraryTarget: 'window'
   },
@@ -24,13 +25,46 @@ module.exports = {
   devServer: {
     compress: true,
     port: 9000
+  }
+};
+
+const clientConfig = {
+  ...config,
+  name: 'client',
+  target: 'web',
+
+  entry: {
+    client: ['@babel/polyfill', './src/index.js']
   },
+
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.client.js'
+  },
+
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production'),
-        APP_ENV: JSON.stringify('browser')
-      }
-    })
+    new webpack.DefinePlugin({ 'process.env.BROWSER': true }),
+    new webpack.IgnorePlugin(/jayson\/promise/)
   ]
 };
+
+const serverConfig = {
+  ...config,
+  name: 'server',
+  target: 'node',
+
+  entry: {
+    server: ['@babel/polyfill', './src/index.js']
+  },
+
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.server.js'
+  },
+
+  plugins: [
+    new webpack.DefinePlugin({ 'process.env.BROWSER': false })
+  ]
+};
+
+module.exports = [clientConfig, serverConfig];

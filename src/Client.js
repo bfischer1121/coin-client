@@ -1,9 +1,8 @@
 import io from 'socket.io-client';
 import fetch from 'cross-fetch';
 import _ from 'lodash';
-
-const isServerSide = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
-const jayson = require((process.env.APP_ENV === 'browser' || !isServerSide) ? 'jayson/lib/client/browser' : 'jayson/promise');
+import jaysonClientSide from 'jayson/lib/client/browser';
+import jaysonServerSide from 'jayson/promise';
 
 export default class Client{
   constructor(host, rpcPort, socketPort){
@@ -106,7 +105,7 @@ export default class Client{
   }
 
   _getServerSideClient(){
-    return jayson.client.http({
+    return jaysonServerSide.client.http({
       host     : this.host,
       port     : this.rpcPort,
       replacer : this._replacer,
@@ -135,7 +134,7 @@ export default class Client{
       callback(null, await response.text());
     };
 
-    let client = jayson(callServer, {
+    let client = jaysonClientSide(callServer, {
       replacer : this._replacer,
       reviver  : this._reviver
     });
