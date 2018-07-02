@@ -22,11 +22,11 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
     "@babel/core": "^7.0.0-beta.51",
-    "@babel/polyfill": "^7.0.0-beta.51",
     "@babel/preset-env": "^7.0.0-beta.51",
     "lodash": "^4.17.10"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-beta.51",
     "cross-fetch": "^2.2.2",
     "jayson": "^2.0.6",
     "socket.io": "^2.1.1"
