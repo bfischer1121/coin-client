@@ -4,7 +4,7 @@ import _TVInterface from './TVInterface';
 
 const TVInterface = new _TVInterface(CoinClient);
 
-export default {
+export {
   CoinClient,
   TwitterClient,
   TVInterface
