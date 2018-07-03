@@ -1,20 +1,13 @@
 const io = require('socket.io-client');
 const fetch = require('cross-fetch');
 const _ = require('lodash');
-const jaysonClientSide = require('jayson/lib/client/browser');
-
-if(!process.env.BROWSER && typeof window === 'undefined'){
-  // using commonjs because nested/variable es6 imports appear to be unsupported
-  const jaysonServerSide = require('jayson/promise');
-}
+const jayson = require('jayson/promise');
 
 class Client{
   constructor(host, rpcPort, socketPort){
     this.host       = host;
     this.rpcPort    = rpcPort;
     this.socketPort = socketPort;
-
-    this.isServerSide = typeof window === 'undefined';
   }
 
   static getClient(cls, host, rpcPort, socketPort){
@@ -102,56 +95,15 @@ class Client{
 
   _getRequestClient(){
     if(!this._client){
-      this._client = this.isServerSide ? this._getServerSideClient() : this._getBrowserSideClient();
+      this._client = jayson.client.https({
+        host     : this.host,
+        port     : this.rpcPort,
+        replacer : this._replacer,
+        reviver  : this._reviver
+      });
     }
 
     return this._client;
-  }
-
-  _getServerSideClient(){
-    return jaysonServerSide.client.https({
-      host     : this.host,
-      port     : this.rpcPort,
-      replacer : this._replacer,
-      reviver  : this._reviver
-    });
-  }
-
-  _getBrowserSideClient(){
-    let callServer = async (request, callback) => {
-      let response;
-
-      let options = {
-        method  : 'POST',
-        body    : request,
-        headers : { 'Content-Type': 'application/json' }
-      };
-
-      try{
-        response = await fetch(`https://${this.host}:${this.rpcPort}`, options);
-      }
-      catch(e){
-        callback(e);
-        return;
-      }
-
-      callback(null, await response.text());
-    };
-
-    let client = jaysonClientSide(callServer, {
-      replacer : this._replacer,
-      reviver  : this._reviver
-    });
-
-    return {
-      request: (method, args) => {
-        return new Promise((resolve, reject) => {
-          client.request(method, args, (localError, remoteError, result) => {
-            resolve({ error: localError || remoteError, result });
-          });
-        });
-      }
-    };
   }
 
   _replacer(key, value){
