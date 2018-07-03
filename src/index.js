@@ -1,11 +1,9 @@
-import CoinClient from './CoinClient.js';
-import TwitterClient from './TwitterClient.js';
-import _TVInterface from './TVInterface';
+const CoinClient = require('./CoinClient.js');
+const TwitterClient = require('./TwitterClient.js');
+const TVInterface = require('./TVInterface');
 
-const TVInterface = new _TVInterface(CoinClient);
-
-export {
+module.exports = {
   CoinClient,
   TwitterClient,
-  TVInterface
+  TVInterface: new TVInterface(CoinClient)
 };
