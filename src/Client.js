@@ -77,7 +77,7 @@ export default class Client{
   }
 
   on(eventName, callback){
-    this._socket = this._socket || io(`http://${this.host}:${this.socketPort}`);
+    this._socket = this._socket || io(`https://${this.host}:${this.socketPort}`);
     this._socket.on(eventName, callback);
   }
 
@@ -109,7 +109,7 @@ export default class Client{
   }
 
   _getServerSideClient(){
-    return jaysonServerSide.client.http({
+    return jaysonServerSide.client.https({
       host     : this.host,
       port     : this.rpcPort,
       replacer : this._replacer,
@@ -128,7 +128,7 @@ export default class Client{
       };
 
       try{
-        response = await fetch(`http://${this.host}:${this.rpcPort}`, options);
+        response = await fetch(`https://${this.host}:${this.rpcPort}`, options);
       }
       catch(e){
         callback(e);
